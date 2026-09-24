@@ -1,20 +1,23 @@
-# Dockerfile del repositorio base.
-# Contiene cinco malas practicas deliberadas. Cada una lleva su numero en la
-# linea anterior. Corregirlas es el bloque A1 de la guia del laboratorio.
+FROM public.ecr.aws/lambda/nodejs:20 AS build
 
-# defecto 1
-FROM public.ecr.aws/lambda/nodejs:20
-
-# defecto 2
+# Manifiesto y lock file antes que el codigo: si no cambian, esta capa
+# queda cacheada y npm ci no se repite en cada build.
 COPY package.json package-lock.json ./
 
-# defecto 3
+# Instalacion reproducible desde el lock file, no resolucion nueva.
 RUN npm ci
 
-# defecto 4
+# El codigo de la app se copia despues de instalar dependencias.
+COPY src ./src
 
+# Deja el artefacto empaquetado en dist/handler.js.
+RUN npm run build
 
-# defecto 5
-RUN dnf clean all
+# Etapa 2: final. Misma imagen base de Lambda, version fija. Recibe
+# unicamente el artefacto empaquetado: no hay node_modules ni gestor de
+# paquetes del sistema invocado aqui.
+FROM public.ecr.aws/lambda/nodejs:20 AS final
 
-CMD ["src/handler.handler"]
+COPY --from=build ${LAMBDA_TASK_ROOT}/dist ./dist
+
+CMD ["dist/handler.handler"]
