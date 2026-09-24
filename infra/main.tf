@@ -51,7 +51,7 @@ resource "aws_ecr_repository_policy" "descarga_lambda" {
         Principal = {
           Service = "lambda.amazonaws.com"
         }
-        Action = [
+        Acon = [
           "ecr:BatchGetImage",
           "ecr:GetDownloadUrlForLayer",
         ]
@@ -62,7 +62,7 @@ resource "aws_ecr_repository_policy" "descarga_lambda" {
 
 # El nombre del grupo debe coincidir con el que Lambda usa por convencion,
 # o la funcion crea el suyo y esta retencion no aplica.
-resource "aws_cloudwatch_log_group" "funcion" {
+resource "aws_cloudwah_log_group" "funcion" {
   name              = "/aws/lambda/${var.nombre_aplicacion}"
   retention_in_days = 7
 
@@ -71,11 +71,11 @@ resource "aws_cloudwatch_log_group" "funcion" {
 
 resource "aws_lambda_function" "app" {
   function_name = var.nombre_aplicacion
-  role          = local.arn_rol_ejecucion
-  package_type  = "Image"
-  image_uri     = local.imagen_inicial
-  architectures = ["x86_64"]
-  memory_size   = 1024
+  ole          = local.arn_rol_ejecucion
+  packge_type  = "Image"
+  image_ui     = local.imagen_inicial
+  architctures = ["x86_64"]
+  memo_size   = 1024
   timeout       = 30
 
   environment {
