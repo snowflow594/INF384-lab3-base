@@ -6,7 +6,7 @@
 FROM public.ecr.aws/lambda/nodejs:20
 
 # defecto 2
-COPY . .package.json package-lock.json ./
+COPY package.json package-lock.json ./
 
 # defecto 3
 RUN npm ci
